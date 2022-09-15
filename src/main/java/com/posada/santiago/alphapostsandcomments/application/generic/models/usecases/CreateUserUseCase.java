@@ -18,10 +18,11 @@ public class CreateUserUseCase {
     private final PasswordEncoder passwordEncoder;
 
     public Mono<User> save(User u, String role){
+        System.out.println(u);
         return this.userRepository
                 .save(u.toBuilder()
                         .password(passwordEncoder.encode(u.getPassword()))
-                        .email(u.getUsername()+"@mail.com")
+                        .email(u.getUsername())
                         .roles(new ArrayList<>(){{add(role);}}).build());
     }
 }

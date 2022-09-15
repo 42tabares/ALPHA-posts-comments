@@ -16,24 +16,27 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
 
 @EnableWebFluxSecurity
 public class SecurityConfig {
     @Bean
     SecurityWebFilterChain springSecurityAccess(ServerHttpSecurity httpSecurity,
                                                 JWTTokenProvider tokenProvider,
-                                                ReactiveAuthenticationManager reactiveAuthenticationManager) {
+                                                ReactiveAuthenticationManager reactiveAuthenticationManager,
+                                                CorsConfigurationSource corsConfigurationSource) {
         //Define as constants the endpoints that you have
         final String CREATE_POST = "/create/post";
         final String CREATE_USERS ="/auth/save/**";
 
         return httpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .cors().configurationSource(corsConfigurationSource).and()
                 .authenticationManager(reactiveAuthenticationManager)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange( access -> access
                         .pathMatchers(CREATE_POST).hasAuthority("ROLE_USER")
-                        .pathMatchers(CREATE_USERS).hasAuthority("ROLE_ADMIN")
+//ADMIN CREATION LINE//        .pathMatchers(CREATE_USERS).hasAuthority("ROLE_ADMIN")
                         .anyExchange().permitAll()
                 ).addFilterAt(new JWTTokenAuthentication(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC)
                 .build();
