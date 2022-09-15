@@ -21,11 +21,10 @@ import org.springframework.web.cors.reactive.CorsConfigurationSource;
 @EnableWebFluxSecurity
 public class SecurityConfig {
     @Bean
-    SecurityWebFilterChain springSecurityAccess(ServerHttpSecurity httpSecurity,
+    public SecurityWebFilterChain springSecurityAccess(ServerHttpSecurity httpSecurity,
                                                 JWTTokenProvider tokenProvider,
                                                 ReactiveAuthenticationManager reactiveAuthenticationManager,
                                                 CorsConfigurationSource corsConfigurationSource) {
-        //Define as constants the endpoints that you have
         final String CREATE_POST = "/create/post";
         final String CREATE_USERS ="/auth/save/**";
 
@@ -36,7 +35,7 @@ public class SecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange( access -> access
                         .pathMatchers(CREATE_POST).hasAuthority("ROLE_USER")
-//ADMIN CREATION LINE//        .pathMatchers(CREATE_USERS).hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(CREATE_USERS).hasAuthority("ROLE_ADMIN") //ADMIN COMMENT LINE//
                         .anyExchange().permitAll()
                 ).addFilterAt(new JWTTokenAuthentication(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC)
                 .build();
@@ -66,8 +65,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //There is no PasswordEncoder mapped for the id "null"
-        // return new BCryptPasswordEncoder();
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
