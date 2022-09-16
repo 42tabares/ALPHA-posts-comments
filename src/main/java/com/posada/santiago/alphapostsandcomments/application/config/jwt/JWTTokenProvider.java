@@ -41,6 +41,8 @@ public class JWTTokenProvider {
         var username = authentication.getName();
         var authorites = authentication.getAuthorities();
 
+        log.info("Creating token for user: " + username);
+
         //Creating a Claim instance in order to send it and gets our access token
         var claims = Jwts.claims().setSubject(username);
 

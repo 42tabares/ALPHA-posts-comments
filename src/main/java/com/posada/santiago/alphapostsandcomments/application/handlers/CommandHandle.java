@@ -2,6 +2,7 @@ package com.posada.santiago.alphapostsandcomments.application.handlers;
 
 
 import co.com.sofka.domain.generic.DomainEvent;
+import com.posada.santiago.alphapostsandcomments.application.config.jwt.JWTTokenAuthentication;
 import com.posada.santiago.alphapostsandcomments.business.usecases.AddCommentUseCase;
 import com.posada.santiago.alphapostsandcomments.business.usecases.CreatePostUseCase;
 import com.posada.santiago.alphapostsandcomments.business.usecases.FavoriteCommentUseCase;
@@ -17,6 +18,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import com.posada.santiago.alphapostsandcomments.domain.commands.setFavoritePostCommand;
 import com.posada.santiago.alphapostsandcomments.domain.commands.setFavoriteCommentCommand;
 
+import java.util.logging.Logger;
+
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
@@ -25,9 +28,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class CommandHandle {
 
+    private final Logger logger = Logger.getLogger(CommandHandle.class.getName());
+
     @Bean
     public RouterFunction<ServerResponse> createPost(CreatePostUseCase useCase){
-
+        logger.info("Request is of type create post");
         return route(
                 POST("/create/post").and(accept(MediaType.APPLICATION_JSON)),
                 request -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
@@ -37,7 +42,7 @@ public class CommandHandle {
 
     @Bean
     public RouterFunction<ServerResponse> addComment(AddCommentUseCase useCase){
-
+        logger.info("Request is of type add comment");
         return route(
                 POST("/add/comment").and(accept(MediaType.APPLICATION_JSON)),
                 request -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)

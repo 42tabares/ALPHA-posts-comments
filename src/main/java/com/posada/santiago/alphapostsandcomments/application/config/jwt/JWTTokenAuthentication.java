@@ -1,5 +1,6 @@
 package com.posada.santiago.alphapostsandcomments.application.config.jwt;
 
+import com.posada.santiago.alphapostsandcomments.AlphaPostsAndCommentsApplication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -10,6 +11,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.logging.Logger;
+
 
 @RequiredArgsConstructor
 public class JWTTokenAuthentication implements WebFilter {
@@ -18,12 +21,17 @@ public class JWTTokenAuthentication implements WebFilter {
 
     private final JWTTokenProvider jwtTokenProvider;
 
+    private final Logger logger = Logger.getLogger(JWTTokenAuthentication.class.getName());
+
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
             //1. Get the request
+        logger.info("Received request, verifying token");
         var token = resolveToken(exchange.getRequest());
+
         if(StringUtils.hasText(token) && this.jwtTokenProvider.validateToken(token)){
+            logger.info("Token accepted, processing petition");
             var autenticantion = this.jwtTokenProvider.getAuthentication(token);
             return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(autenticantion));
         }
